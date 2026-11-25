@@ -1825,7 +1825,8 @@ func (idx *Index) ShouldSkip(isDir bool, adjustedPath string, isHidden bool, isS
 		// For API calls (not routine scan), check parent paths too
 		if !isRoutineScan {
 			for path := range rules.FolderPaths {
-				if strings.HasPrefix(adjustedPath, path) {
+				// A root-level rule (folderPath "/") only sets global flags; as a prefix it would match every path.
+				if path != "/" && strings.HasPrefix(adjustedPath, path) {
 					return true
 				}
 			}
@@ -1861,7 +1862,7 @@ func (idx *Index) ShouldSkip(isDir bool, adjustedPath string, isHidden bool, isS
 			}
 			// Check if file's parent folder is viewable (don't skip if parent allows viewing)
 			for path, rule := range rules.FolderPaths {
-				if strings.HasPrefix(adjustedPath, path) && !rule.Viewable {
+				if path != "/" && strings.HasPrefix(adjustedPath, path) && !rule.Viewable {
 					return true
 				}
 			}
